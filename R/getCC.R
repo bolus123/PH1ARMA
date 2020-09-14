@@ -130,7 +130,7 @@ fapPH1ARMA <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVe
 }
 
 getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
-                         nsim1 = 1000, nsim2 = 1000, burnIn = 1000, seed = 12345) {
+                         nsim = 1000, burnIn = 1000, seed = 12345) {
 
   root.finding <- function(FAP0, cc, n, order, phiVec, thetaVec, nsim1, nsim2, burnIn, seed) {
 
@@ -163,8 +163,14 @@ getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0,
 
   }
 
+  if (is.matrix(phiVec) | is.matrix(thetaVec)) {
+    nsim1 <- max(dim(phiVec)[1], dim(thetaVec)[1])
+  } else {
+    nsim1 <- 0
+  }
+
   uniroot(root.finding, interval, FAP0 = FAP0, n = n, order = order, phiVec = phiVec, thetaVec = thetaVec,
-          nsim1 = nsim1, nsim2 = nsim2, burnIn = burnIn, seed = seed)$root
+          nsim1 = nsim1, nsim2 = nsim, burnIn = burnIn, seed = seed)$root
 
 
 }
