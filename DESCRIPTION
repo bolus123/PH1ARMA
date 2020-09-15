@@ -1,11 +1,19 @@
 Package: PH1ARMA
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Phase I Individual Chart with ARMA
+Version: 0.9.0
+Authors@R: c(
+				person("Yuhui", "Yao", role = c("aut", "cre"), email = "yyao17@cba.ua.edu"),
+				person('Subha', 'Chakraborti', role = c('ctb'), email = 'schakrab@cba.ua.edu'),
+				person('Xin', 'Yang', role = c('ctb'), email = 'xyang15@cba.ua.edu'),
+				person('Jason', 'Parton', role = c('ctb'), email = 'jmparton@cba.ua.edu'),
+				person('Dwight', 'Lewis', role = c('ctb'), email = 'lewis060@cba.ua.edu')
+			)
+Maintainer: Yuhui Yao <yyao17@cba.ua.edu>
+%Author: Yuhui Yao [aut]
+Description: The purpose of PH1XBAR is to build a Phase I Individual control chart with an ARMA model in R.
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 3.3.0), forecast
+URL: https://github.com/bolus123/PH1ARMA

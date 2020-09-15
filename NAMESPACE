@@ -1,1 +1,4 @@
-exportPattern("^[[:alpha:]]+")
+import('forecast')
+
+export('getCC')
+export('PH1ARMA')
