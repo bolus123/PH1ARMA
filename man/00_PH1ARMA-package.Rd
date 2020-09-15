@@ -31,7 +31,7 @@ abc
 # Build a Phase I basic Shewhart control chart
 data(data)
 X <- data ^ (1/3)
-PH1ARMA(X)
+PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)
 
 
 %}

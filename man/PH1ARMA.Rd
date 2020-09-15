@@ -43,16 +43,16 @@ data(data)
 X <- data ^ (1/3)
 
 # An example using the default setting whose FAP0 = 0.1
-#PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)
+PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)
 
 # An example for FAP0 = 0.05
-#PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100)
+PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100)
 
 # An example using the default setting whose FAP0 = 0.1
-#PH1ARMA(X, double.sim = FALSE, nsimProcess = 100)
+PH1ARMA(X, double.sim = FALSE, nsimProcess = 100)
 
 # An example for FAP0 = 0.05
-#PH1ARMA(X, FAP0 = 0.05, double.sim = FALSE, nsimProcess = 100)
+PH1ARMA(X, FAP0 = 0.05, double.sim = FALSE, nsimProcess = 100)
 
 %}
 }
