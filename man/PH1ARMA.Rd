@@ -9,7 +9,7 @@ PH1ARMA(
 	,order = NULL
 	,method = 'CSS-ML'
 	,plot.option = TRUE
-	,interval = c(1, 5)
+	,interval = c(1, 4)
 	,double.sim = TRUE
 	,nsimCoefs = 1000
 	,nsimProcess = 1000
