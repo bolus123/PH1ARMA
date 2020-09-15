@@ -15,5 +15,5 @@ Description: The purpose of PH1XBAR is to build a Phase I Individual control cha
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.3.0), forecast
+Depends: R (>= 3.5.0), forecast
 URL: https://github.com/bolus123/PH1ARMA
