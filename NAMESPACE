@@ -1,4 +1,8 @@
 import('forecast')
 
+importFrom("graphics", "axis", "points", "text")
+importFrom("stats", "arima", "arima.sim", "rbeta", "rgamma", "rnorm",
+             "rt", "sd", "uniroot", "var")
+
 export('getCC')
 export('PH1ARMA')
