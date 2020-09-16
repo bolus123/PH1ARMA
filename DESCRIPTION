@@ -11,7 +11,7 @@ Authors@R: c(
 			)
 Maintainer: Yuhui Yao <yyao17@cba.ua.edu>
 %Author: Yuhui Yao [aut]
-Description: The purpose of PH1XBAR is to build a Phase I Individual control chart with an ARMA model in R.
+Description: The purpose of PH1ARMA is to build a Phase I Individual control chart with an ARMA model in R.
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

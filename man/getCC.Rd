@@ -1,6 +1,6 @@
 \name{getCC}
 \alias{getCC}
-\title{get Phase I corrected charting constant}
+\title{get a corrected charting constant for Phase I individual control chart with an ARMA model}
  \usage{
 getCC(
 	FAP0 = 0.1
@@ -21,14 +21,14 @@ getCC(
   \item{FAP0}{ nominal false Alarm Probabilty in Phase 1 }
   \item{interval}{ searching range of charting constants for the exact method }
   \item{n}{ number of observations }
-  \item{order}{ order of ARMA model }
-  \item{phiVec}{ phi vector }
-  \item{thetaVec}{ theta vector }
-  \item{method}{ estimation method }
-  \item{double.sim}{ double simulation }
-  \item{nsimCoefs}{ number of simulation for coeficients }
-  \item{nsimProcess}{ number of simulation for processes with ARMA }
-  \item{burnIn}{ number of burn-ins }
+  \item{order}{ order for ARMA model }
+  \item{phiVec}{ autoregressive coeficient vector }
+  \item{thetaVec}{ moving average coeficient vector }
+  \item{method}{ estimation method for the ARMA model. Default is "CSS-ML". Other options are 'ML' and 'CSS'. }
+  \item{double.sim}{ double simulation option.  Default is TRUE. }
+  \item{nsimCoefs}{ number of simulation for coeficients.  It is functional when double.sim = TRUE. }
+  \item{nsimProcess}{ number of simulation for ARMA processes }
+  \item{burnIn}{ number of burn-ins.  When burnIn = 0, the ECM gets involved.  When burnIn is large enough, the ACM gets involved. }
   \item{seed}{ random seed }
 
 }
