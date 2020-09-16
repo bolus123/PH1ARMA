@@ -46,7 +46,7 @@ Also, PH1ARMA provides a function to get the corrected charting constant as foll
 # double simulation gets involved if estimators are unknown
 getCC(FAP0 = 0.1, double.sim = TRUE)
 
-# singular simulation gets involved if estimators are known
+# single simulation gets involved if estimators are known
 getCC(FAP0 = 0.1, double.sim = FALSE)
 ```
 
