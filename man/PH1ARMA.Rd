@@ -38,8 +38,8 @@ Build a Phase I individual control chart with an ARMA model. The charting consta
 %\dontrun{
 
 # load the data in the package as an example
-data(data)
-X <- data ^ (1/3)
+data(chambers_data)
+X <- chambers_data ^ (1/3)
 
 # An example using the default setting whose FAP0 = 0.1
 PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)

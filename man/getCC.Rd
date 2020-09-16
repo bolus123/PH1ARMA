@@ -39,19 +39,24 @@ Obtain a corrected charting constant.
 %\dontrun{
 
 # get charting constant with AR(1) model with coeficient = 0.5 using single simulation
-getCC(FAP0 = 0.1, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, double.sim = FALSE, nsimProcess = 100)
+getCC(FAP0 = 0.1, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, 
+	double.sim = FALSE, nsimProcess = 100)
 
 # get charting constant with MA(1) model with coeficient = 0.5 using single simulation
-getCC(FAP0 = 0.1, order = c(0, 0, 1), phiVec = NULL, thetaVec = 0.5, double.sim = FALSE, nsimProcess = 100)
+getCC(FAP0 = 0.1, order = c(0, 0, 1), phiVec = NULL, thetaVec = 0.5, 
+	double.sim = FALSE, nsimProcess = 100)
 
 # get charting constant with AR(1) model with coeficient = 0.5 using double simulation
-getCC(FAP0 = 0.1, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
+getCC(FAP0 = 0.1, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, 
+	double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
 
 # get charting constant with MA(1) model with coeficient = 0.5 using double simulation
-getCC(FAP0 = 0.1, order = c(0, 0, 1), phiVec = NULL, thetaVec = 0.5, double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
+getCC(FAP0 = 0.1, order = c(0, 0, 1), phiVec = NULL, thetaVec = 0.5, 
+	double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
 
 # get charting constant with ARMA(1, 1) model with coeficient = 0.5 using double simulation
-getCC(FAP0 = 0.1, order = c(1, 0, 1), phiVec = 0.5, thetaVec = 0.5, double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
+getCC(FAP0 = 0.1, order = c(1, 0, 1), phiVec = 0.5, thetaVec = 0.5, 
+	double.sim = TRUE, nsimCoefs = 100, nsimProcess = 100)
 
 %}
 }

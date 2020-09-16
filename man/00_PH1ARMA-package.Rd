@@ -29,8 +29,8 @@ abc
 %\dontrun{
 
 # Build a Phase I individual control chart with an ARMA model
-data(data)
-X <- data ^ (1/3)
+data(chambers_data)
+X <- chambers_data ^ (1/3)
 PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)
 
 %}
