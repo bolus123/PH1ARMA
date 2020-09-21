@@ -140,8 +140,6 @@ fapPH1ARMAUnknown <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, 
 fapPH1ARMAKnown <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, gamma0 = 1,
                        nsim = 1000, burnIn = 1000) {
   
-  #cat('phi:', phi, '\n')
-  #cat('gamma0:', gamma0, '\n')
   out <- lapply(1:nsim, function(X){
     sim <- simARMAProcess(n, order, phiVec, thetaVec, sigma = 1,
                           innovDist = 'norm', innovPars = c(0, 1), burnIn = burnIn)
@@ -161,7 +159,7 @@ getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0,
     set.seed(seed)
     
     if (nsim1 > 0) {
-      #cat('Unknown', '\n')
+
       FAPin <- lapply(1:nsim1, function(X) {
         
         phiVecTmp <- phiVec[X, ]
@@ -177,7 +175,7 @@ getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0,
       FAPin <- mean(unlist(FAPin))
       
     } else {
-      #cat('Known', '\n')
+
 	  if (order == c(1, 0, 0)) {
 		gamma0 <- 1 / (1 - phiVec ^ 2)
 	  } else if (order == c(0, 0, 1)) {
