@@ -72,30 +72,6 @@ simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
   
 }
 
-sqrtSigmaMat <- function(n, phi, MatType = 'ECM') {
-
-	PhiMat <- diag(n)
-	if (MatType == 'ECM') {
-		for (i in 1:(n - 1)) {
-			PhiMat <- PhiMat + Diag(rep(phi ^ i, n - i), k = -i)
-		}
-		SigmaMat <- (1 - phi ^ 2) * (PhiMat %*% t(PhiMat))
-	} else if (MatType == 'ACM') {
-		for (i in 1:(n - 1)) {
-			PhiMat <- PhiMat + Diag(rep(phi ^ i, n - i), k = -i) + + Diag(rep(phi ^ i, n - i), k = i)
-		}
-		SigmaMat <- PhiMat
-	}
-	
-	list(SigMat = SigmaMat, sqrtSigMat = sqrtm(SigmaMat))
-
-}
-
-simAR1Process <- function(n, sqrtSigMat, innovDist = 'norm', innovPars = c(0, 1)) {
-
-	sqrtSigMat %*% matrix(simInnov(n, sigma = 1, XSim = innovDist, XPars = innovPars), ncol = 1)
-	
-}
 
 simCoefDist <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, method = 'CSS-ML',
                         nsim = 1000, burnIn = 1000, seed = 12345) {
@@ -145,119 +121,6 @@ simCoefDist <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, me
   
 }
 
-simCoefDistAR1 <- function(n, phiVec = 0.5, MatType = 'ECM', method = 'Method 3',
-                        nsim = 1000, seed = 12345) {
-  
-  set.seed(seed)
-  
-  outAR <- rep(NA, nsim)
-  
-  sqrtSigMat <- sqrtSigmaMat(n, phi = phiVec, MatType = MatType)$sqrtSigMat
-  
-  for (i in 1:nsim) {
-    
-      flg <- 1
-    
-      while (flg == 1) {
-      
-        sim <- simAR1Process(n, sqrtSigMat, innovDist = 'norm', innovPars = c(0, 1)) 
-		
-		if (method == 'Method 1' | method == 'Method 3') {
-			method1 <- 'CSS-ML'
-		} else if (method == 'Method 2') {
-			method1 <- 'CSS'
-		}
-		
-        model <- try(arima(sim, order = c(1, 0, 0), method = method1), silent = TRUE)
-        
-        if (class(model) != 'try-error') {
-          if (!is.null(phiVec)) {
-            outAR[i] <- model$coef[1]
-          } else {
-            outAR[i] <- NULL
-          }
-          
-          flg <- 0
-          
-        } 
-        
-      }
-    
-    
-  }
-  
-  outAR
-  
-}
-
-fapPH1AR1 <- function(cc = 3, n = 30, phiVec = 0.5, MatType = 'ECM', case = 'U', method = 'Method 3', gamma0 = 1 / (1 - phiVec ^ 2),
-                       nsim = 1000) {
-					   
-	sqrtSigMat <- sqrtSigmaMat(n, phi = phiVec, MatType = MatType)				   
-
-					   
-	out <- lapply(1:nsim, function(X){
-		flg <- 1
-		while(flg == 1) {
-			sim <- simAR1Process(n, sqrtSigMat$sqrtSigMat, innovDist = 'norm', innovPars = c(0, 1))
-				if (method == 'Method 1') {
-					m1 <- try(arima(sim, order = c(1, 0, 0), method = 'CSS-ML'), silent = TRUE)
-					if (class(m1) == 'try-error') {
-						flg = 1
-					} else {
-						sim <- (sim - m1$coef[2] / (1 - m1$coef[1])) / sqrt(1 - m1$coef[1] ^ 2)
-						flg <- 0
-					}
-				} else if (method == 'Method 2' | method == 'Method 3') {
-					sim <- (sim - mean(sim)) / sd(sim)
-					flg <- 0
-				}
-		}
-		sum(-cc <= sim & sim <= cc) != n
-	})
-	
-	mean(unlist(out))
-
-
-}
-
-getCCPH1AR1 <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, phiVec = 0.5, MatType = 'ECM', case = 'U', method = 'Method 3',
-                         nsim1 = 1000, nsim2 = 1000, seed = 12345) {
-  
-  root.finding <- function(FAP0, cc, n, phiVec, MatType, case, method, nsim1, nsim2, seed) {
-    
-    set.seed(seed)
-    
-    FAPin <- unlist(lapply(1:nsim1, function(X) {
-        phi <- phiVec[X]
-		gamma0 <- 1 / (1 - phi ^ 2)
-        fapPH1AR1(cc = cc, n = n, phiVec = phi, MatType = MatType, case = case, method = method, gamma0 = gamma0,
-			nsim = nsim2)
-        
-    }))
-    FAPin <- mean(FAPin)
-    cat('FAPin:', FAPin, 'and cc:', cc, '\n')
-    FAP0 - FAPin
-    
-  }
-  
-	if (case == 'U') {
-		phiVec <- simCoefDistAR1(n, phiVec = phiVec, MatType = MatType, method = method,
-                        nsim = nsim1, seed = seed)
-	} else {
-		nsim1 <- 1
-	}
-
-	if (case == 'K') {
-		set.seed(seed)
-		sqrtSigMat <- sqrtSigmaMat(n, phi = phiVec, MatType = MatType)	
-		qmvnorm(1 - FAP0, tail = 'both.tails', sigma = sqrtSigMat$SigMat)$quantile
-	} else if (case == 'U') {
-		uniroot(root.finding, interval, FAP0 = FAP0, n = n, phiVec = phiVec, MatType = MatType, case = case, method = method, 
-          nsim1 = nsim1, nsim2 = nsim2, seed = seed)$root
-	}
-  
-}
 
 
 fapPH1ARMA <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, case = 'U', gamma0 = 1,
@@ -305,16 +168,15 @@ getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0,
       
     } else {
 
-	  if (sum(order == c(1, 0, 0)) == 0) {
-		gamma0 <- 1 / (1 - phiVec ^ 2)
-	  } else if (sum(order == c(0, 0, 1)) == 0) {
-		gamma0 <- (1 + thetaVec ^ 2)
-	  } else if (sum(order == c(1, 0, 1)) == 0) {
-		gamma0 <- (1 + 2 * phiVec * thetaVec + thetaVec ^ 2) / (1 - phiVec ^ 2)
+	  if (sum(order == c(1, 0, 0)) == 3) {
+		  gamma0 <- 1 / (1 - phiVec ^ 2)
+	  } else if (sum(order == c(0, 0, 1)) == 3) {
+		  gamma0 <- (1 + thetaVec ^ 2)
+	  } else if (sum(order == c(1, 0, 1)) == 3) {
+		  gamma0 <- (1 + 2 * phiVec * thetaVec + thetaVec ^ 2) / (1 - phiVec ^ 2)
 	  } else {
-		sim <- simARMAProcess(50000000, order, phiVec, thetaVec, sigma = 1,
-                          innovDist = 'norm', innovPars = c(0, 1), burnIn = burnIn)
-		gamma0 <- var(sim)
+		  sigMat1 <- SigmaMat(n, order, phiVec1, thetaVec1, sigma2 = m1$sigma2, burnIn = 30)
+		  gamma0 <- sigMat1$gamma0
 	  }
 	 
       FAPin <- fapPH1ARMA(cc = cc, n = n, order = order, phiVec = phiVec, thetaVec = thetaVec, 
@@ -339,20 +201,20 @@ getCCPH1ARMA <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0,
   
 }
 
-getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, method = 'CSS-ML',
-                  double.sim = TRUE, nsimCoefs = 1000, nsimProcess = 1000, burnIn = 1000, seed = 12345) {
+getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, case = 'U', 
+              method = 'CSS-ML', double.sim = TRUE, nsimCoefs = 1000, nsimProcess = 1000, burnIn = 1000, seed = 12345) {
   
   
   if (double.sim == TRUE) {
     
     CoefDist <- simCoefDist(n, order, phiVec, thetaVec, method, nsim = nsimCoefs, burnIn = burnIn, seed = seed)
-    
-    out <- getCCPH1ARMA(FAP0, interval, n, order, phiVec = CoefDist$phiVec, thetaVec = CoefDist$thetaVec,
+
+    out <- getCCPH1ARMA(FAP0, interval, n, order, phiVec = CoefDist$phiVec, thetaVec = CoefDist$thetaVec, case = case,
                         nsim = nsimProcess, burnIn = burnIn, seed = seed)
     
   } else {
     
-    out <- getCCPH1ARMA(FAP0, interval, n, order, phiVec = phiVec, thetaVec = thetaVec,
+    out <- getCCPH1ARMA(FAP0, interval, n, order, phiVec = phiVec, thetaVec = thetaVec, case = case,
                         nsim = nsimProcess, burnIn = burnIn, seed = seed)
     
   }
@@ -363,7 +225,7 @@ getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 30, order = c(1, 0, 0), ph
 
 
 PH1ARMA <- function(X, cc = NULL, FAP0 = 0.1, order = NULL, method = 'CSS-ML', plot.option = TRUE,
-                    interval = c(1, 4), double.sim = TRUE, nsimCoefs = 1000, nsimProcess = 1000, burnIn = 1000, seed = 12345) {
+                    interval = c(1, 4), case = 'U', double.sim = TRUE, nsimCoefs = 1000, nsimProcess = 1000, burnIn = 1000, seed = 12345) {
   
   Y <- X
   
@@ -396,9 +258,9 @@ PH1ARMA <- function(X, cc = NULL, FAP0 = 0.1, order = NULL, method = 'CSS-ML', p
     } else {
       thetaVec <- NULL
     }
-    
-    cc <- getCC(FAP0 = FAP0, interval = interval, n, order = order, phiVec = phiVec, thetaVec = thetaVec, method = method,
-                double.sim = double.sim, nsimCoefs = nsimCoefs, nsimProcess = nsimProcess, burnIn = burnIn, seed = seed)
+
+    cc <- getCC(FAP0 = FAP0, interval = interval, n, order = order, phiVec = phiVec, thetaVec = thetaVec, case = case, 
+      method = method, double.sim = double.sim, nsimCoefs = nsimCoefs, nsimProcess = nsimProcess, burnIn = burnIn, seed = seed)
     
   }
   

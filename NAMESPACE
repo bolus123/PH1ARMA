@@ -1,4 +1,6 @@
 import('forecast')
+import('mvtnorm')
+import('pracma')
 
 importFrom("graphics", "axis", "points", "text")
 importFrom("stats", "arima", "arima.sim", "rbeta", "rgamma", "rnorm",

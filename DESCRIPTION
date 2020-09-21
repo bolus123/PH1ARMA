@@ -15,5 +15,5 @@ Description: The purpose of PH1ARMA is to build a Phase I Individual control cha
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.5.0), forecast
+Depends: R (>= 3.5.0), forecast, mvtnorm, pracma
 URL: https://github.com/bolus123/PH1ARMA
