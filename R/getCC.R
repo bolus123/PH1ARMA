@@ -140,8 +140,8 @@ fapPH1ARMAUnknown <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, 
 fapPH1ARMAKnown <- function(cc = 3, n = 30, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, gamma0 = 1,
                        nsim = 1000, burnIn = 1000) {
   
-  cat('phi:', phi, '\n')
-  cat('gamma0:', gamma0, '\n')
+  #cat('phi:', phi, '\n')
+  #cat('gamma0:', gamma0, '\n')
   out <- lapply(1:nsim, function(X){
     sim <- simARMAProcess(n, order, phiVec, thetaVec, sigma = 1,
                           innovDist = 'norm', innovPars = c(0, 1), burnIn = burnIn)
