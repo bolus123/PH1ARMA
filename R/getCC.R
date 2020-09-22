@@ -348,8 +348,8 @@ getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 50, order = c(1, 0, 0), ph
   if (case == 'K') {
     if (simType == 'Matrix') {
       set.seed(seed)
-      sigMat <- SigmaMat(n, order = order, phiVec = phiVec, thetaVec = thetaVec, sigma2 = 1, burnIn = burnIn)$SigmaMat
-      out <- qmvnorm(1 - FAP0, tail = 'both.tails', sigma = sigMat)$quantile
+      sigMat <- SigmaMat(n, order = order, phiVec = phiVec, thetaVec = thetaVec, sigma2 = 1, burnIn = burnIn)
+      out <- qmvnorm(1 - FAP0, tail = 'both.tails', corr = sigMat$SigmaMat / sigMat$gamma0)$quantile
     } else {
       out <- getCCPH1ARMASim(FAP0, interval, n, order, phiVec = phiVec, thetaVec = thetaVec, case = case, method = method,
                              nsim = nsimProcess, burnIn = burnIn, simType = simType, seed = seed)
