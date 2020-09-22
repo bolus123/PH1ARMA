@@ -18,7 +18,7 @@ License: \tab GPL (>= 3)\cr
 Function 'PH1ARMA' builds a Phase I individual control chart with an ARMA model using a correct charting constant.
 Function 'getCC' gets a charting constant for the data with an ARMA model.
 }
-\author{ Yuhui Yao, Subha Chakraborti, Xin Thomas Yang, Jason Parton, Dwight Lewis.
+\author{ Yuhui Yao, Subha Chakraborti, Xin Thomas Yang, Jason Parton, Dwight Lewis, Matthew Hudnall.
 
 Maintainer: Yuhui Yao <yyao17@cba.ua.edu>
 }

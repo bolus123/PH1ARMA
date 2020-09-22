@@ -8,3 +8,4 @@ importFrom("stats", "arima", "arima.sim", "rbeta", "rgamma", "rnorm",
 
 export('getCC')
 export('PH1ARMA')
+

@@ -7,13 +7,14 @@ PH1ARMA(
 	,cc = NULL
 	,FAP0 = 0.1
 	,order = NULL
-	,method = 'CSS-ML'
+	,method = 'Method 3'
 	,plot.option = TRUE
 	,interval = c(1, 4)
-	,double.sim = TRUE
+	,case = 'U'
 	,nsimCoefs = 1000
 	,nsimProcess = 1000
 	,burnIn = 1000
+	,simType = 'Matrix'
 	,seed = 12345
 )
 }
@@ -22,13 +23,14 @@ PH1ARMA(
   \item{cc}{ nominal Phase I charting constant. If this is given, the function will not re-compute the charting constant. }
   \item{FAP0}{ nominal false Alarm Probabilty in Phase I }
   \item{order}{ order for ARMA model }
-  \item{method}{ estimation method for the ARMA model. Default is "CSS-ML". Other options are 'ML' and 'CSS'. }
+  \item{method}{ estimation method for the control chart. When method = 'Method 3' is maximum likehood estimations plus method of moments. Other options are 'Method 1' which is pure MLE and 'Method 2' which is pure method of moments. }
   \item{plot.option}{TRUE - draw a plot for the process; FALSE - Not draw a plot for the process}
   \item{interval}{ searching range of charting constants for the exact method }
-  \item{double.sim}{ double simulation option.  Default is TRUE. }
+  \item{case}{ known or unknown case.  When case = 'U', the parameters are estimated }
   \item{nsimCoefs}{ number of simulation for coeficients.  It is functional when double.sim = TRUE. }
   \item{nsimProcess}{ number of simulation for ARMA processes }
   \item{burnIn}{ number of burn-ins.  When burnIn = 0, the ECM gets involved.  When burnIn is large enough, the ACM gets involved. }
+  \item{simType}{ type of simulation.  When simType = 'Matrix', the simulation is generated using matrix computation.  When simType = 'recursive', the simulation is based on a recursion. }
   \item{seed}{ random seed }
 }
 \description{
@@ -47,11 +49,11 @@ PH1ARMA(X, nsimCoefs = 100, nsimProcess = 100)
 # An example using the default setting for FAP0 = 0.05
 PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100)
 
-# An example using the singular simualtion with FAP0 = 0.1
-PH1ARMA(X, double.sim = FALSE, nsimProcess = 100)
+# An example using known parameters with FAP0 = 0.1
+PH1ARMA(X, case = 'K', nsimProcess = 100)
 
-# An example using the singular simualtion with FAP0 = 0.05
-PH1ARMA(X, FAP0 = 0.05, double.sim = FALSE, nsimProcess = 100)
+# An example using the single simualtion with FAP0 = 0.05
+PH1ARMA(X, FAP0 = 0.05, case = 'K', nsimProcess = 100)
 
 %}
 }
