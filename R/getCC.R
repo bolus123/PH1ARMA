@@ -134,7 +134,7 @@ simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
 
   if (simType == 'Matrix') {
 
-    SigMat$sqrtSigmaMat %*% matrix(simInnov(n, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), ncol = 1)
+    as.vector(SigMat$sqrtSigmaMat %*% matrix(simInnov(n, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), ncol = 1))
 
   } else if (simType == 'Recursive') {
 
