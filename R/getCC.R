@@ -1,8 +1,7 @@
 ##############################################
   #Matrix form
 ##############################################
-"InvertQ" <-
-  function(coef){
+InvertQ <- function(coef){
     stopifnot(class(coef)=="numeric"||class(coef)=="matrix"||(class(coef)=="array" && (dim(coef)[1]==dim(coef)[2])))
     if (class(coef) == "numeric")
       coef <- array(coef,dim=c(1,1,length(coef)))
@@ -37,6 +36,8 @@ parsMat <- function(n, parsVec, norder = 1) {
   }
 }
 
+
+
 SigmaMat <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, sigma2 = 1, burnIn = 50) {
   if (order[1] == 0) {
     phiMat <- diag(n + burnIn)
@@ -55,7 +56,7 @@ SigmaMat <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, sigma
   gamma0 <- out[dim(out)[1], dim(out)[2]]
 
   if (burnIn > 0) {
-    out <- out[-c(1:burnIn), -c(1:burnIn)] / out[n + burnIn, n + burnIn]
+    out <- out[-c(1:burnIn), -c(1:burnIn)]
   }
 
   list(SigmaMat = out, sqrtSigmaMat = sqrtm(out)$B, gamma0 = gamma0)
@@ -123,18 +124,12 @@ simInnov <- function(n, sigma2 = 1, XSim = 'norm', XPars = c(0, 1)) {
 
 
 
-#simARMAProcessMat <- function(n, sqrtSigMat, innovDist = 'norm', innovPars = c(0, 1)) {
-#
-#  sqrtSigMat %*% matrix(simInnov(n, sigma = 1, XSim = innovDist, XPars = innovPars), ncol = 1)
-#
-#}
-
 simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, sigma2 = 1, innovDist = 'norm', innovPars = c(0, 1), burnIn = 50,
                            simType = 'Matrix', SigMat = SigmaMat(n = n, order = order, phiVec = phiVec, thetaVec = thetaVec, sigma2 = sigma2, burnIn = burnIn)) {
 
   if (simType == 'Matrix') {
 
-    as.vector(SigMat$sqrtSigmaMat %*% matrix(simInnov(n, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), ncol = 1))
+    as.vector(SigMat$sqrtSigmaMat %*% matrix(simInnov(n, sigma2 = 1, XSim = innovDist, XPars = innovPars), ncol = 1))
 
   } else if (simType == 'Recursive') {
 
@@ -142,13 +137,13 @@ simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
 
       arima.sim(list(order = order, ar = phiVec, ma = thetaVec),
                 n = n + burnIn,
-                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars))[-(1:burnIn)]
+                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), n.start = 1)[-(1:burnIn)]
 
     } else {
 
       arima.sim(list(order = order, ar = phiVec, ma = thetaVec),
                 n = n + burnIn,
-                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars))
+                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), n.start = 1)
 
     }
 
@@ -156,6 +151,7 @@ simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
 
 
 }
+
 
 
 simCoefDist <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, method = 'Method 3',
@@ -366,6 +362,7 @@ getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 50, order = c(1, 0, 0), ph
 }
 
 
+
 PH1ARMA <- function(X, cc = NULL, FAP0 = 0.1, order = NULL, plot.option = TRUE, interval = c(1, 4),
                     case = 'U', method = 'Method 3', nsimCoefs = 100, nsimProcess = 1000, burnIn = 50, simType = 'Matrix',
                     seed = 12345) {
@@ -447,3 +444,4 @@ PH1ARMA <- function(X, cc = NULL, FAP0 = 0.1, order = NULL, plot.option = TRUE, 
 
 
 }
+
