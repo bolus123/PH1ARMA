@@ -30,7 +30,7 @@ PH1ARMA(
   \item{nsimCoefs}{ number of simulation for coeficients.  It is functional when double.sim = TRUE. }
   \item{nsimProcess}{ number of simulation for ARMA processes }
   \item{burnIn}{ number of burn-ins.  When burnIn = 0, the ECM gets involved.  When burnIn is large enough, the ACM gets involved. }
-  \item{simType}{ type of simulation.  When simType = 'Matrix', the simulation is generated using matrix computation.  When simType = 'recursive', the simulation is based on a recursion. }
+  \item{simType}{ type of simulation.  When simType = 'Matrix', the simulation is generated using matrix computation.  When simType = 'Recursive', the simulation is based on a recursion. }
   \item{seed}{ random seed }
 }
 \description{
