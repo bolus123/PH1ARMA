@@ -55,5 +55,9 @@ PH1ARMA(X, case = 'K', nsimProcess = 100)
 # An example using the single simualtion with FAP0 = 0.05
 PH1ARMA(X, FAP0 = 0.05, case = 'K', nsimProcess = 100)
 
+# When users get an error message about the size of matrix, the function needs to use the alternative simulation type as follows
+PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100, simType = 'Recursive')	
+	
+	
 %}
 }
