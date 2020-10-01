@@ -4,11 +4,7 @@ Title: Phase I Individual Chart with ARMA
 Version: 0.9.0
 Authors@R: c(
 				person("Yuhui", "Yao", role = c("aut", "cre"), email = "yyao17@cba.ua.edu"),
-				person('Subha', 'Chakraborti', role = c('ctb'), email = 'schakrab@cba.ua.edu'),
-				person('Xin', 'Yang', role = c('ctb'), email = 'xyang15@cba.ua.edu'),
-				person('Jason', 'Parton', role = c('ctb'), email = 'jmparton@cba.ua.edu'),
-				person('Dwight', 'Lewis', role = c('ctb'), email = 'lewis060@cba.ua.edu')
-			)
+				person('Subha', 'Chakraborti', role = c('ctb'), email = 'schakrab@cba.ua.edu'))
 Maintainer: Yuhui Yao <yyao17@cba.ua.edu>
 %Author: Yuhui Yao [aut]
 Description: The purpose of PH1ARMA is to build a Phase I Individual control chart with an ARMA model in R.
