@@ -11,9 +11,9 @@ PH1ARMA(
 	,plot.option = TRUE
 	,interval = c(1, 4)
 	,case = 'U'
-	,nsimCoefs = 1000
+	,nsimCoefs = 100
 	,nsimProcess = 1000
-	,burnIn = 1000
+	,burnIn = 50
 	,simType = 'Matrix'
 	,seed = 12345
 )
@@ -23,7 +23,7 @@ PH1ARMA(
   \item{cc}{ nominal Phase I charting constant. If this is given, the function will not re-compute the charting constant. }
   \item{FAP0}{ nominal false Alarm Probabilty in Phase I }
   \item{order}{ order for ARMA model }
-  \item{method}{ estimation method for the control chart. When method = 'Method 3' is maximum likehood estimations plus method of moments. Other options are 'Method 1' which is pure MLE and 'Method 2' which is pure method of moments. }
+  \item{method}{ estimation method for the control chart. When method = 'Method 3' is maximum likehood estimations plus method of moments. Other options are 'Method 1' which is pure MLE and 'Method 2' which is pure CSS. }
   \item{plot.option}{TRUE - draw a plot for the process; FALSE - Not draw a plot for the process}
   \item{interval}{ searching range of charting constants for the exact method }
   \item{case}{ known or unknown case.  When case = 'U', the parameters are estimated }
@@ -55,9 +55,10 @@ PH1ARMA(X, case = 'K', nsimProcess = 100)
 # An example using the single simualtion with FAP0 = 0.05
 PH1ARMA(X, FAP0 = 0.05, case = 'K', nsimProcess = 100)
 
-# When users get an error message about the size of matrix, the function needs to use the alternative simulation type as follows
-PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100, simType = 'Recursive')	
-	
-	
+# When users get an error message about the size of matrix,
+# the function needs to use the alternative simulation type as follows
+PH1ARMA(X, FAP0 = 0.05, nsimCoefs = 100, nsimProcess = 100, simType = 'Recursive')
+
+
 %}
 }
