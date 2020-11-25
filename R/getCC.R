@@ -2,32 +2,52 @@
   #Matrix form
 ##############################################
 InvertQ <- function(coef){
-    stopifnot(class(coef)=="numeric"||class(coef)=="matrix"||(class(coef)=="array" && (dim(coef)[1]==dim(coef)[2])))
-    if (class(coef) == "numeric")
-      coef <- array(coef,dim=c(1,1,length(coef)))
-    if (class(coef) == "matrix")
-      coef <- array(coef,dim=c(NROW(coef),NROW(coef),1))
-    k <- dim(coef)[1]
-    order <- dim(coef)[3]
-    if (order==1)
-      ans <- eigen(coef[,,1], symmetric=FALSE, only.values =TRUE)$value
-    else{
-      blockMat <- matrix(numeric((k*order)^2),k*order,k*order)
-      blockMat[1:k,] <- coef
-      Imat <- diag((order-1)*k)
-      blockMat[((k+1):(k*order)),1:((order-1)*k)] <- Imat
-      ans <- eigen(blockMat, symmetric=FALSE, only.values =TRUE)$value
-    }
-    MaxEigenvalue <- max(Mod(ans))
-    if (MaxEigenvalue >= 1)
-      return( warning("check stationary/invertibility condition !"))
-  }
+
+      out <- 1
+
+      if (all(abs(coef) < 1)) {
+
+          stopifnot(class(coef)=="numeric"||class(coef)=="matrix"||(class(coef)=="array" && (dim(coef)[1]==dim(coef)[2])))
+          if (class(coef) == "numeric")
+            coef <- array(coef,dim=c(1,1,length(coef)))
+          if (class(coef) == "matrix")
+            coef <- array(coef,dim=c(NROW(coef),NROW(coef),1))
+          k <- dim(coef)[1]
+          order <- dim(coef)[3]
+          if (order==1)
+            ans <- eigen(coef[,,1], symmetric=FALSE, only.values =TRUE)$value
+          else{
+            blockMat <- matrix(numeric((k*order)^2),k*order,k*order)
+            blockMat[1:k,] <- coef
+            Imat <- diag((order-1)*k)
+            blockMat[((k+1):(k*order)),1:((order-1)*k)] <- Imat
+            ans <- eigen(blockMat, symmetric=FALSE, only.values =TRUE)$value
+          }
+          MaxEigenvalue <- max(Mod(ans))
+
+          if (MaxEigenvalue >= 1) {
+
+            out <- 0
+
+          }
+
+        } else {
+
+          out <- 0
+
+      }
+
+
+
+    return(out)
+
+}
 
 parsMat <- function(n, parsVec, norder = 1) {
   Check <- InvertQ(parsVec)
-  if (class(Check) == 'character') {
+  if (Check == 0) {
     NULL
-  } else if (is.null(Check)) {
+  } else {
     Mat <- diag(n)
     for (i in 1:norder) {
       Mat <- Mat + Diag(rep(parsVec[i], n - i), k = -i)
@@ -133,17 +153,19 @@ simARMAProcess <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL,
 
   } else if (simType == 'Recursive') {
 
+    innov <- simInnov(n + burnIn + order[1] + order[3], sigma2 = sigma2, XSim = innovDist, XPars = innovPars)
+
+    n.start <- order[1] + order[3]
+
     if (burnIn > 0) {
 
       arima.sim(list(order = order, ar = phiVec, ma = thetaVec),
-                n = n + burnIn,
-                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), n.start = 1)[-(1:burnIn)]
+                n = n + burnIn, innov = innov[-c(1:(n.start))], n.start = n.start, start.innov = innov[c(1:(n.start))])[(burnIn + 1):(n + burnIn)]
 
     } else {
 
       arima.sim(list(order = order, ar = phiVec, ma = thetaVec),
-                n = n + burnIn,
-                innov = simInnov(n + burnIn, sigma2 = sigma2, XSim = innovDist, XPars = innovPars), n.start = 1)
+                n = n + burnIn, innov = innov[-c(1:(n.start))], n.start = n.start, start.innov = innov[c(1:(n.start))])
 
     }
 
@@ -160,8 +182,8 @@ simCoefDist <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, me
 
   set.seed(seed)
 
-  outAR <- matrix(NA, nrow = nsim, ncol = length(phiVec))
-  outMA <- matrix(NA, nrow = nsim, ncol = length(thetaVec))
+  outAR <- matrix(NA, nrow = nsim, ncol = order[1])
+  outMA <- matrix(NA, nrow = nsim, ncol = order[3])
   outMean <- rep(NA, nsim)
   outGamma <- rep(NA, nsim)
 
@@ -180,23 +202,36 @@ simCoefDist <- function(n, order = c(1, 0, 0), phiVec = 0.5, thetaVec = NULL, me
           model <- try(arima(sim, order = order, method = 'CSS'), silent = TRUE)
         }
 
+        check1 <- 1
+        check2 <- 1
+
         if (class(model) != 'try-error') {
-          if (!is.null(phiVec)) {
+          if (order[1] > 0) {
             outAR[i, ] <- model$coef[1:order[1]]
+            check1 = InvertQ(outAR[i, ]) == 1
+            #cat('AR:', outAR[i, ], '\n')
+            #cat('check1:', check1, '\n')
           } else {
-            outAR[i, ] <- NULL
+            outAR[i, ] <- rep(0, order[1])
           }
 
-          if (!is.null(thetaVec)) {
+          if (order[3] > 0) {
             outMA[i, ] <- model$coef[(order[1] + 1):(order[1] + order[3])]
+            check2 = InvertQ(outMA[i, ]) == 1
+            #cat('MA:', outMA[i, ], '\n')
+            #cat('check2:', check2, '\n')
           } else {
-            outMA[i, ] <- NULL
+            outMA[i, ] <- rep(0, order[3])
           }
 
-          outMean[i] <- mean(sim)
-          outGamma[i] <- var(sim)
 
-          flg <- 0
+          if (check1 & check2) {
+
+            outMean[i] <- mean(sim)
+            outGamma[i] <- var(sim)
+
+            flg <- 0
+          }
 
         }
 
@@ -299,10 +334,16 @@ getCCPH1ARMASim <- function(FAP0 = 0.1, interval = c(1, 4), n = 50, order = c(1,
       FAPin <- lapply(1:nsim1, function(X) {
 
         phiVecTmp <- phiVec[X, ]
-        if (length(phiVecTmp) == 0) phiVecTmp <- NULL
+        if (length(phiVecTmp) == 0) phiVecTmp <- rep(0, order[1])
 
         thetaVecTmp <- thetaVec[X, ]
-        if (length(thetaVecTmp) == 0) thetaVecTmp <- NULL
+        if (length(thetaVecTmp) == 0) thetaVecTmp <- rep(0, order[3])
+
+        #cat('AR:', phiVecTmp, '\n')
+        #cat('checkAR:', all(abs(outAR[i, ]) < 1), '\n')
+
+        #cat('MA:', thetaVecTmp, '\n')
+        #cat('checkMA:', all(abs(outMA[i, ]) < 1), '\n')
 
         fapPH1ARMA(cc = cc, n = n, order = order, phiVec = phiVecTmp, thetaVec = thetaVecTmp,
 			    case = case, method = method, nsim = nsim2, burnIn = burnIn, simType = simType)
@@ -330,8 +371,12 @@ getCCPH1ARMASim <- function(FAP0 = 0.1, interval = c(1, 4), n = 50, order = c(1,
     nsim1 <- 0
   }
 
+  ##cat('phiVec:', phiVec, 'thetaVec:', thetaVec, sep = ', ')
+
   uniroot(root.finding, interval, FAP0 = FAP0, n = n, order = order, phiVec = phiVec, thetaVec = thetaVec, case = case, method = method,
           nsim1 = nsim1, nsim2 = nsim, burnIn = burnIn, simType = simType, seed = seed)$root
+
+
 
 
 }
@@ -351,7 +396,7 @@ getCC <- function(FAP0 = 0.1, interval = c(1, 4), n = 50, order = c(1, 0, 0), ph
                              nsim = nsimProcess, burnIn = burnIn, simType = simType, seed = seed)
     }
   } else if (case == 'U') {
-    CoefDist <- simCoefDist(n, order, phiVec, thetaVec, method, nsim = nsimCoefs, burnIn = burnIn, seed = seed)
+    CoefDist <- simCoefDist(n, order, phiVec, thetaVec, method, nsim = nsimCoefs, burnIn = burnIn, seed = seed, simType = simType)
 
     out <- getCCPH1ARMASim(FAP0, interval, n, order, phiVec = CoefDist$phiVec, thetaVec = CoefDist$thetaVec, case = case, method = method,
                            nsim = nsimProcess, burnIn = burnIn, simType = simType, seed = seed)
